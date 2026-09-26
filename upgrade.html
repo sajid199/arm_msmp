@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ARM MSMP + Upgrade Security</title>
+<title>SAP Upgrade Security</title>
 <style>
 :root{
   --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
@@ -49,7 +49,6 @@ body{
 }
 .main-nav a:hover{border-color:var(--accent); color:var(--accent2);}
 .wrap{max-width:680px; margin:0 auto; padding:24px 18px 50px;}
-h1{font-size:1.4rem; margin:0 0 4px;}
 .sub{color:var(--sub); font-size:.85rem; margin:0 0 18px;}
 .section-tag{
   display:inline-block; background:var(--card); border:1px solid var(--border);
@@ -83,49 +82,10 @@ footer{text-align:center; color:var(--sub); font-size:.72rem; padding:24px 0 4px
     </nav>
   </div>
 </header>
+
 <div class="wrap">
-  <h1>ARM MSMP + SAP Upgrade Security</h1>
-  <p class="sub">Simple notes for interview revision</p>
-
-  <span class="section-tag">PART 1</span>
-  <h2>ARM + MSMP — the specific points to know</h2>
-
-  <p><b>1. Process ID for ARM is fixed</b></p>
-  <ul>
-    <li>Process ID: <b>SAP_GRAC_ACCESS_REQUEST</b></li>
-    <li>This is one of the most commonly asked facts — always remember it</li>
-  </ul>
-
-  <p><b>2. Initiator Rule decides request TYPE, not just yes/no</b></p>
-  <ul>
-    <li>In ARM, the initiator rule decides which <b>category</b> the request falls into (e.g. New Account, Change, Emergency-linked)</li>
-    <li>That result flows through Route Mapping (Step 6) to decide the Path</li>
-    <li>Flow: Initiator Rule Result → Route Mapping → Path → Stages</li>
-  </ul>
-
-  <p><b>3. Stages in ARM are usually role-based</b></p>
-  <ul>
-    <li>Common real-world path: <b>Manager Approval → Role Owner Approval → Security Team Approval</b></li>
-    <li>If there's an SoD (Segregation of Duties) conflict, an extra stage is added: <b>Risk Owner / Mitigation Approval</b></li>
-    <li>This extra stage is usually triggered via a BRF+ decision table checking the risk analysis result</li>
-  </ul>
-
-  <p><b>4. Agents in ARM often use GRC API rules, not static roles</b></p>
-  <ul>
-    <li>Because "who approves" depends on context (which role, which system, which business unit)</li>
-    <li>GRC API rule is more scalable and context-sensitive than a hardcoded PFCG role/group</li>
-  </ul>
-
-  <p><b>5. BRF+ integration point</b></p>
-  <ul>
-    <li>When a standard MSMP rule isn't enough (multi-condition logic needed), a <b>BRF+ Decision Table</b> is used as the rule engine</li>
-    <li>Its result gets registered in MSMP's Maintain Rules step (Step 2)</li>
-  </ul>
-
-  <div class="recap">
-    <b>One-line answer for "Explain ARM MSMP"</b>
-    ARM workflow runs on process ID SAP_GRAC_ACCESS_REQUEST. The Initiator Rule categorizes the request, and its result goes through Route Mapping to assign a Path — typically Manager → Role Owner → Security, with an extra Risk stage when an SoD conflict is detected. Agents are mostly GRC API rules since approval is context-dependent, and complex conditions are handled through BRF+.
-  </div>
+  <h1>SAP Version Upgrade</h1>
+  <p class="sub">Security Team's Role</p>
 
   <span class="section-tag">PART 2</span>
   <h2>SAP Version Upgrade — Security Team's Role</h2>
@@ -165,7 +125,7 @@ footer{text-align:center; color:var(--sub); font-size:.72rem; padding:24px 0 4px
     <li>Use authorization trace (ST01/STAUTHTRACE) to catch missing authorizations</li>
   </ul>
 
-  <p><b>6. Cutover & Go-Live</b></p>
+  <p><b>6. Cutover &amp; Go-Live</b></p>
   <ul>
     <li>Move roles to Production via controlled transport</li>
     <li>Keep Emergency Access (Firefighter ID) ready for go-live support</li>
