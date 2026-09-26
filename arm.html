@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARM MSMP + Upgrade Security</title>
+<style>
+:root{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4faf9; --card:#ffffff; --accent:#0f766e; --accent2:#0d9488;
+    --text:#0c1e1c; --sub:#436461; --border:#dcece9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  line-height:1.6;
+}
+.site-header{
+  position:sticky; top:0; z-index:10;
+  background:rgba(11,20,24,0.9); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.nav-wrap{
+  max-width:720px; margin:0 auto; padding:12px 18px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.brand{
+  font-size:.9rem; font-weight:700; letter-spacing:.04em; color:var(--accent2);
+  text-transform:uppercase;
+}
+.main-nav{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.main-nav a{
+  color:var(--text); text-decoration:none; padding:7px 10px; border-radius:999px;
+  border:1px solid var(--border); background:var(--card); font-size:.78rem;
+}
+.main-nav a:hover{border-color:var(--accent); color:var(--accent2);}
+.wrap{max-width:680px; margin:0 auto; padding:24px 18px 50px;}
+h1{font-size:1.4rem; margin:0 0 4px;}
+.sub{color:var(--sub); font-size:.85rem; margin:0 0 18px;}
+.section-tag{
+  display:inline-block; background:var(--card); border:1px solid var(--border);
+  color:var(--accent); font-size:.72rem; padding:3px 10px; border-radius:999px;
+  margin:26px 0 6px;
+}
+h2{
+  font-size:1.05rem; color:var(--accent2); margin:6px 0 8px;
+  border-bottom:1px solid var(--border); padding-bottom:6px;
+}
+p{margin:6px 0; font-size:.92rem; color:var(--text);}
+ul{margin:6px 0; padding-left:20px; font-size:.92rem;}
+li{margin:5px 0; color:var(--text);}
+b{color:var(--accent2);}
+.recap{
+  margin-top:18px; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:16px; font-size:.9rem;
+}
+.recap b{display:block; margin-bottom:6px;}
+footer{text-align:center; color:var(--sub); font-size:.72rem; padding:24px 0 4px;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-wrap">
+    <div class="brand">GRC Notes</div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Workflow</a>
+      <a href="arm.html">ARM + Upgrade</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <h1>ARM MSMP + SAP Upgrade Security</h1>
+  <p class="sub">Simple notes for interview revision</p>
+
+  <span class="section-tag">PART 1</span>
+  <h2>ARM + MSMP — the specific points to know</h2>
+
+  <p><b>1. Process ID for ARM is fixed</b></p>
+  <ul>
+    <li>Process ID: <b>SAP_GRAC_ACCESS_REQUEST</b></li>
+    <li>This is one of the most commonly asked facts — always remember it</li>
+  </ul>
+
+  <p><b>2. Initiator Rule decides request TYPE, not just yes/no</b></p>
+  <ul>
+    <li>In ARM, the initiator rule decides which <b>category</b> the request falls into (e.g. New Account, Change, Emergency-linked)</li>
+    <li>That result flows through Route Mapping (Step 6) to decide the Path</li>
+    <li>Flow: Initiator Rule Result → Route Mapping → Path → Stages</li>
+  </ul>
+
+  <p><b>3. Stages in ARM are usually role-based</b></p>
+  <ul>
+    <li>Common real-world path: <b>Manager Approval → Role Owner Approval → Security Team Approval</b></li>
+    <li>If there's an SoD (Segregation of Duties) conflict, an extra stage is added: <b>Risk Owner / Mitigation Approval</b></li>
+    <li>This extra stage is usually triggered via a BRF+ decision table checking the risk analysis result</li>
+  </ul>
+
+  <p><b>4. Agents in ARM often use GRC API rules, not static roles</b></p>
+  <ul>
+    <li>Because "who approves" depends on context (which role, which system, which business unit)</li>
+    <li>GRC API rule is more scalable and context-sensitive than a hardcoded PFCG role/group</li>
+  </ul>
+
+  <p><b>5. BRF+ integration point</b></p>
+  <ul>
+    <li>When a standard MSMP rule isn't enough (multi-condition logic needed), a <b>BRF+ Decision Table</b> is used as the rule engine</li>
+    <li>Its result gets registered in MSMP's Maintain Rules step (Step 2)</li>
+  </ul>
+
+  <div class="recap">
+    <b>One-line answer for "Explain ARM MSMP"</b>
+    ARM workflow runs on process ID SAP_GRAC_ACCESS_REQUEST. The Initiator Rule categorizes the request, and its result goes through Route Mapping to assign a Path — typically Manager → Role Owner → Security, with an extra Risk stage when an SoD conflict is detected. Agents are mostly GRC API rules since approval is context-dependent, and complex conditions are handled through BRF+.
+  </div>
+
+  <span class="section-tag">PART 2</span>
+  <h2>SAP Version Upgrade — Security Team's Role</h2>
+
+  <p><b>1. Pre-Upgrade Assessment</b></p>
+  <ul>
+    <li>Run <b>SU25 impact analysis</b> on existing roles/authorizations — the new version may change or deprecate transactions</li>
+    <li>Take inventory of custom roles vs SAP-delivered roles</li>
+    <li>Check the GRC risk ruleset — new T-codes can introduce new SoD risks</li>
+  </ul>
+
+  <p><b>2. SU25 Steps (core of the upgrade for Security)</b></p>
+  <ul>
+    <li><b>Step 1:</b> Initial Fill of customer tables (SU24 data) — only for the first-time upgrade</li>
+    <li><b>Step 2A/2B:</b> Preparation — compare old vs new SAP default values (USOBX/USOBT changes)</li>
+    <li><b>Step 2C:</b> Automatically adjust roles against the new authorization defaults</li>
+    <li>Manually review conflicts where the customer had already modified authorization values</li>
+  </ul>
+
+  <p><b>3. Role Impact Analysis</b></p>
+  <ul>
+    <li>Map new/changed/deprecated transactions to existing roles</li>
+    <li>Reflect newly added/removed authorization objects in roles</li>
+    <li>Handle Fiori catalog/group changes if moving to S/4HANA (classic to Fiori shift)</li>
+  </ul>
+
+  <p><b>4. GRC Ruleset Update</b></p>
+  <ul>
+    <li>Update/reimport the SAP standard ruleset for the new version (to cover risks from new T-codes)</li>
+    <li>Re-run risk analysis on existing roles — clean up new false positives/negatives</li>
+  </ul>
+
+  <p><b>5. Testing</b></p>
+  <ul>
+    <li>Regenerate test roles in QA/Sandbox (PFCG mass generation)</li>
+    <li>UAT (User Acceptance Testing) with key users — especially for Fiori tiles/apps if it's an S/4HANA move</li>
+    <li>Use authorization trace (ST01/STAUTHTRACE) to catch missing authorizations</li>
+  </ul>
+
+  <p><b>6. Cutover & Go-Live</b></p>
+  <ul>
+    <li>Move roles to Production via controlled transport</li>
+    <li>Keep Emergency Access (Firefighter ID) ready for go-live support</li>
+    <li>Monitor post-go-live — use SU53/trace to catch real-time authorization issues</li>
+  </ul>
+
+  <div class="recap">
+    <b>One-line answer for "SAP upgrade steps as Security"</b>
+    The core of a Security team's upgrade work is SU25 — reconciling old vs new authorization defaults, impact-analyzing and updating roles, refreshing the GRC ruleset against new T-codes, and running authorization trace-based testing before go-live so access doesn't break.
+  </div>
+
+  <footer>Study anywhere · Works offline</footer>
+</div>
+</body>
+</html>
