@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SU25 + Upgrade Security Checklist</title>
+<style>
+:root{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4faf9; --card:#ffffff; --accent:#0f766e; --accent2:#0d9488;
+    --text:#0c1e1c; --sub:#436461; --border:#dcece9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  line-height:1.6;
+}
+.site-header{
+  position:sticky; top:0; z-index:10;
+  background:rgba(11,20,24,0.9); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.nav-wrap{
+  max-width:720px; margin:0 auto; padding:12px 18px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.brand{
+  font-size:.9rem; font-weight:700; letter-spacing:.04em; color:var(--accent2);
+  text-transform:uppercase;
+}
+.main-nav{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.main-nav a{
+  color:var(--text); text-decoration:none; padding:7px 10px; border-radius:999px;
+  border:1px solid var(--border); background:var(--card); font-size:.78rem;
+}
+.main-nav a:hover{border-color:var(--accent); color:var(--accent2);}
+.wrap{max-width:680px; margin:0 auto; padding:24px 18px 50px;}
+h1{font-size:1.4rem; margin:0 0 4px;}
+.sub{color:var(--sub); font-size:.85rem; margin:0 0 18px;}
+.section-tag{
+  display:inline-block; background:var(--card); border:1px solid var(--border);
+  color:var(--accent); font-size:.72rem; padding:3px 10px; border-radius:999px;
+  margin:26px 0 6px;
+}
+h2{
+  font-size:1.05rem; color:var(--accent2); margin:6px 0 8px;
+  border-bottom:1px solid var(--border); padding-bottom:6px;
+}
+h3{font-size:.95rem; color:var(--text); margin:16px 0 4px;}
+p{margin:6px 0; font-size:.92rem; color:var(--text);}
+ul{margin:6px 0; padding-left:20px; font-size:.92rem;}
+li{margin:5px 0; color:var(--text);}
+b{color:var(--accent2);}
+.step-card{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:12px 14px; margin:10px 0;
+}
+.step-card .tag{
+  display:inline-block; font-size:.68rem; font-weight:700; color:var(--accent);
+  background:var(--bg); border:1px solid var(--border); border-radius:999px;
+  padding:2px 8px; margin-bottom:6px;
+}
+table{width:100%; border-collapse:collapse; font-size:.85rem; margin:10px 0;}
+th,td{border:1px solid var(--border); padding:7px 8px; text-align:left; vertical-align:top;}
+th{background:var(--card); color:var(--accent2);}
+.recap{
+  margin-top:18px; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:16px; font-size:.9rem;
+}
+.recap b{display:block; margin-bottom:6px;}
+footer{text-align:center; color:var(--sub); font-size:.72rem; padding:24px 0 4px;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-wrap">
+    <div class="brand">GRC Notes</div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">MSMP Workflow</a>
+      <a href="arm.html">ARM</a>
+      <a href="upgrade.html">Upgrade</a>
+      <a href="su25-upgrade.html">SU25</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <h1>SU25 &amp; Upgrade Security Checklist</h1>
+  <p class="sub">Simple notes for interview revision</p>
+
+  <span class="section-tag">PART 1</span>
+  <h2>SU25 — Profile Upgradation</h2>
+
+  <p><b>Why SU25 is required?</b></p>
+  <ul>
+    <li>Two standard tables — <b>USOBT</b> (T-Code vs Authorization Object) and <b>USOBX</b> (check indicators for USOBT).</li>
+    <li>After upgrading SAP to a new release, all roles and transaction codes need adjustment.</li>
+    <li><b>SU25</b> is the transaction used to upgrade the Profile Generator.</li>
+    <li>Has <b>6 steps</b> — which ones you run depends on whether Profile Generator was already in use in the last release.</li>
+  </ul>
+
+  <div class="step-card">
+    <div class="tag">STEP 1</div>
+    <b>Initially Fill the Customer Tables</b>
+    <p>One-time activity. Used only if Profile Generator was never used before. Copies SAP data into customer tables USOBT_C, USOBX_C.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 2A</div>
+    <b>Preparation — Compare with SAP Values</b>
+    <p>Prepares the comparison. Must be executed first, before 2B/2C/2D.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 2B</div>
+    <b>Compare Affected Transactions</b>
+    <p>Compares your changed check indicators/field values (from SU24) against new SAP defaults. Status shows "to be checked" or "checked"; option to copy remaining SAP defaults in bulk.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 2C</div>
+    <b>Roles to Be Checked</b>
+    <p>Identifies roles affected by authorization data changes — status "profile comparison required". Alternative: assign users the SAP_NEW profile temporarily instead of fixing every role right away.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 2D</div>
+    <b>Display Changed Transaction Codes</b>
+    <p>Lists roles containing old T-codes that got replaced by new ones. Double-click to jump to the role and fix it.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 3</div>
+    <b>Transport the Customer Tables</b>
+    <p>Transports changes from Steps 1, 2A, 2B to other systems (Dev → QA → Prod).</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 4</div>
+    <b>Check Indicator (Optional, via SU24)</b>
+    <p>Check/Maintain → authorization added to Profile Generator. Do Not Check → object skipped entirely. Can also edit authorization templates.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 5</div>
+    <b>Deactivate Authorization Object Globally (Optional)</b>
+    <p>Switches off an authorization object system-wide.</p>
+  </div>
+
+  <div class="step-card">
+    <div class="tag">STEP 6</div>
+    <b>Copy Data from Old Profiles</b>
+    <p>Creates roles from manually-generated profiles; roles then need manual tailoring and checking.</p>
+  </div>
+
+  <div class="recap">
+    <b>Which steps matter most in a real upgrade?</b>
+    2B and 2C get repeated every upgrade/support pack — 2B to review SAP's new defaults, 2C to identify and fix affected roles. Step 1 runs only once, ever.
+  </div>
+
+  <span class="section-tag">PART 2</span>
+  <h2>Security Consultant Checklist — Pre & Post Upgrade</h2>
+
+  <h3>Pre-Upgrade (Preparation Phase)</h3>
+  <ul>
+    <li>Run SU25 comparison (Step 2A first) to see what's changing in the target release.</li>
+    <li>Impact analysis on custom roles — SUIM/role usage reports to flag obsolete/renamed T-codes.</li>
+    <li>Map classic T-codes to Fiori apps and plan catalog/group assignments.</li>
+    <li>Backup the GRC ruleset — export ARA Functions, Risks, Rules.</li>
+    <li>Take a pre-upgrade SoD baseline snapshot for later comparison.</li>
+    <li>Check GRC version compatibility with the target release.</li>
+    <li>Role and user cleanup — remove unused roles, expired mitigations, orphan users.</li>
+    <li>Test critical roles in sandbox/QA with SU53 and ST01 traces.</li>
+  </ul>
+
+  <h3>During Upgrade (Technical Window)</h3>
+  <ul>
+    <li>Monitor SU25 Step 2C as SAP delivers new authorization defaults.</li>
+    <li>Review and flag only — no role edits yet at this stage.</li>
+    <li>Coordinate with Basis to pause GRC repository sync jobs during downtime.</li>
+  </ul>
+
+  <h3>Post-Upgrade (Validation &amp; Stabilization)</h3>
+  <ul>
+    <li>Complete SU25 Steps 2D and 3 — fix roles with replaced T-codes, transport final changes.</li>
+    <li>Mass regenerate roles via PFCG (SUPC/mass generation).</li>
+    <li>Run authorization traces (ST01/SU53/STAUTHTRACE) on key users and Fiori apps.</li>
+    <li>Validate Fiori Launchpad — catalogs, groups, tiles, OData services.</li>
+    <li>Full GRC repository sync — Authorization objects, Actions, Permissions, User/Role master data.</li>
+    <li>Reconcile SoD ruleset — compare baseline vs post-upgrade risk analysis.</li>
+    <li>Test EAM — Firefighter ID logins and SM20/CDHDR log sync.</li>
+    <li>Verify custom (Z) authorization objects still work.</li>
+    <li>Hypercare support for 2-4 weeks — resolve authorization tickets.</li>
+    <li>Update documentation — role matrix, RAR mitigation docs, ARM request forms.</li>
+  </ul>
+
+  <div class="recap">
+    <b>30-second interview answer</b>
+    Before the upgrade, I do role impact analysis and take a GRC baseline. During the upgrade, I monitor SU25 Step 2C where SAP flags new authorization changes. After the upgrade, I run SU25 Steps 2D and 3, regenerate roles in PFCG, run authorization traces, validate Fiori and GRC, then support hypercare for a couple of weeks.
+  </div>
+
+  <footer>Study anywhere · Works offline</footer>
+</div>
+</body>
+</html>
