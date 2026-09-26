@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GRC MSMP Workflow</title>
+<style>
+:root{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4faf9; --card:#ffffff; --accent:#0f766e; --accent2:#0d9488;
+    --text:#0c1e1c; --sub:#436461; --border:#dcece9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1418; --card:#101d22; --accent:#2dd4bf; --accent2:#5eead4;
+  --text:#e6f4f3; --sub:#a9c2c0; --border:#1c3238;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  line-height:1.6;
+}
+.wrap{max-width:680px; margin:0 auto; padding:24px 18px 50px;}
+h1{font-size:1.4rem; margin:0 0 4px;}
+.sub{color:var(--sub); font-size:.85rem; margin:0 0 18px;}
+.mnemonic{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:12px 16px; margin-bottom:22px; font-size:.85rem; color:var(--sub);
+}
+.mnemonic b{color:var(--accent2); display:block; margin-bottom:3px; font-size:.9rem;}
+h2{
+  font-size:1.05rem; color:var(--accent2); margin:26px 0 8px;
+  border-bottom:1px solid var(--border); padding-bottom:6px;
+}
+p{margin:6px 0; font-size:.92rem; color:var(--text);}
+p.sub-line{color:var(--sub);}
+ul{margin:6px 0; padding-left:20px; font-size:.92rem;}
+li{margin:4px 0; color:var(--text);}
+b{color:var(--accent2);}
+.recap{
+  margin-top:28px; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:16px; font-size:.9rem;
+}
+.recap b{display:block; margin-bottom:6px;}
+footer{text-align:center; color:var(--sub); font-size:.72rem; padding:20px 0 4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GRC MSMP Workflow</h1>
+  <p class="sub">Simple notes for interview revision</p>
+
+  <p>All four GRC modules — <b>ARA, ARM, EAM, BRM</b> — use the same workflow concept. Every workflow has <b>7 configuration steps</b>, and each module uses routing, approval paths, and stages for its own operations.</p>
+
+  <div class="mnemonic">
+    <b>Memory line</b>
+    Process → Rules → Agents → Templates → Paths → Route → Generate
+  </div>
+
+  <h2>Step 1: Process Global Settings</h2>
+  <ul>
+    <li>Sets the <b>Initiator Rule</b> for a Process ID (example: <b>SAP_GRAC_ACCESS_REQUEST</b>)</li>
+    <li>Rule: each Process ID can have only <b>ONE active Initiator Rule</b> — no more, no less</li>
+    <li><b>Initiator Rule</b> = starts the request. It checks one unique condition.</li>
+    <li>If a custom condition is needed, you create a <b>BRF+ rule</b> instead, and declare its possible results</li>
+    <li><b>Routing Rule</b> = works like the initiator rule, but is used for handling exceptions <i>during</i> the workflow (not at the start)</li>
+    <li>Both Initiator and Routing rules must have their results declared, and routings must be set up</li>
+  </ul>
+
+  <h2>Step 2: Maintain Rules</h2>
+  <ul>
+    <li>This is a <b>master list of all rules</b> used anywhere in the workflow</li>
+    <li>Any new rule you create must be added here</li>
+    <li>The <b>default initiator</b> is also set in this step</li>
+    <li>You must list all the <b>possible results</b> a rule can return (using the Results button) — these results get connected to a Path later, in Step 6</li>
+  </ul>
+
+  <h2>Step 3: Maintain Agents</h2>
+  <ul>
+    <li><b>Agent</b> = the person who will approve or get notified during the workflow</li>
+    <li>Unlike the Initiator Rule, an Agent Rule's condition does <b>not</b> need to be unique — it can return multiple people/results at once if the process needs it</li>
+    <li>4 ways to define an agent: GRC API rule, PFCG User Group, PFCG Role, Directly Mapped user</li>
+  </ul>
+
+  <h2>Step 4: Variables and Templates</h2>
+  <ul>
+    <li>This step defines the <b>variables</b> that can appear inside the notification email/template sent to users</li>
+    <li>Example: request number, requester name, approver name — these get plugged into the notification text</li>
+    <li>The rule and its variables must be declared here</li>
+  </ul>
+
+  <h2>Step 5: Maintain Paths</h2>
+  <ul>
+    <li>Here you decide the <b>approval path</b>: will it be 1 stage or 2 stages (or more)?</li>
+    <li>You set a <b>Path ID</b> and connect it to an <b>Agent ID</b></li>
+    <li>Example: <b>GRAC_DEFAULT_PATH</b> has 2 stages — <b>Manager</b> and <b>Security</b></li>
+    <li>This step is where you decide how many people need to approve, and in what order</li>
+  </ul>
+
+  <h2>Step 6: Maintain Route Mapping</h2>
+  <ul>
+    <li>This step <b>connects</b> the rule result (from Step 2) to the correct path (from Step 5)</li>
+    <li>Example: Result <b>GRAC_DEFAULT_RESULT</b> is mapped to Path <b>GRAC_DEFAULT_PATH</b></li>
+    <li><b>Important rule:</b> The Global Initiator must always be used. If you need multiple different paths, the Global Initiator must return different result values for each case</li>
+  </ul>
+
+  <h2>Step 7: Generate Versions</h2>
+  <ul>
+    <li>The final step — this <b>saves and activates</b> all the changes you made across the previous 6 steps</li>
+    <li>Nothing goes live until this step is done</li>
+  </ul>
+
+  <div class="recap">
+    <b>One-line interview answer</b>
+    MSMP workflow has 7 steps. First, an Initiator Rule decides if and how a request starts. Then we list all rules, define agents (approvers), set up notification variables, build approval paths with stages, map rule results to those paths, and finally generate a version to activate everything.
+  </div>
+
+  <footer>Study anywhere · Works offline</footer>
+</div>
+</body>
+</html>
